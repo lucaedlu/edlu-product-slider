@@ -15,13 +15,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 require plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php';
 
-$edluUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
-    'https://github.com/lucaedlu/edlu-product-slider/', // URL repo GitHub
-    __FILE__,                                           // questo file
-    'edlu-product-slider'                               // slug del plugin
-);
+// Usa la factory namespaced della v5
+if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
+    $edluUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+        'https://github.com/lucaedlu/edlu-product-slider/', // URL repo GitHub
+        __FILE__,                                           // questo file
+        'edlu-product-slider'                               // slug del plugin
+    );
 
-$edluUpdateChecker->setBranch('main'); // branch principale del repo
+    $edluUpdateChecker->setBranch('main'); // branch principale del repo
+}
 
 /**
  * Registra il widget con Elementor.
