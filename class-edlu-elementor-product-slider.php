@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
+use Elementor\Group_Control_Typography;
+use Elementor\Group_Control_Border;
+use Elementor\Group_Control_Box_Shadow;
 
 class EDLU_Elementor_Product_Slider extends Widget_Base {
 
@@ -13,8 +16,8 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
     }
 
     public function get_title() {
-        return 'Catalogo Prodotti (EDLU)';
-    }
+        return 'Catalogo Prodotti (EDLU)'
+;    }
 
     public function get_icon() {
         return 'eicon-products';
@@ -28,9 +31,12 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         return [ 'woocommerce', 'prodotti', 'catalogo', 'slider', 'shop' ];
     }
 
+    /**
+     * Controlli Elementor
+     */
     protected function register_controls() {
 
-        // SEZIONE QUERY
+        // TAB CONTENUTO → Query
         $this->start_controls_section(
             'section_query',
             [
@@ -53,21 +59,55 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $this->add_control(
             'posts_per_page',
             [
-                'label'   => 'Numero prodotti',
+                'label'   => 'Numero massimo prodotti (totale)',
                 'type'    => Controls_Manager::NUMBER,
-                'default' => 8,
+                'default' => 24,
                 'min'     => 1,
-                'max'     => 48,
+                'max'     => 200,
             ]
         );
 
         $this->end_controls_section();
 
-        // SEZIONE LAYOUT
+        // TAB CONTENUTO → Layout & Slider
         $this->start_controls_section(
             'section_layout',
             [
-                'label' => 'Layout',
+                'label' => 'Layout & Slider',
+            ]
+        );
+
+        $this->add_control(
+            'enable_slider',
+            [
+                'label'        => 'Abilita slider',
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => 'Sì',
+                'label_off'    => 'No',
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
+        );
+
+        $this->add_control(
+            'columns',
+            [
+                'label'   => 'Colonne (desktop)',
+                'type'    => Controls_Manager::NUMBER,
+                'default' => 4,
+                'min'     => 1,
+                'max'     => 6,
+            ]
+        );
+
+        $this->add_control(
+            'rows',
+            [
+                'label'   => 'Righe per pagina',
+                'type'    => Controls_Manager::NUMBER,
+                'default' => 2,
+                'min'     => 1,
+                'max'     => 6,
             ]
         );
 
@@ -96,13 +136,180 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         );
 
         $this->end_controls_section();
+
+        /*
+         * TAB STILE → Card
+         */
+        $this->start_controls_section(
+            'section_style_card',
+            [
+                'label' => 'Card prodotto',
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name'     => 'card_border',
+                'selector' => '{{WRAPPER}} .edlu-product-item',
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Box_Shadow::get_type(),
+            [
+                'name'     => 'card_shadow',
+                'selector' => '{{WRAPPER}} .edlu-product-item',
+            ]
+        );
+
+        $this->add_control(
+            'card_background',
+            [
+                'label'     => 'Sfondo card',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-item' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'card_padding',
+            [
+                'label'      => 'Padding card',
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', 'em', '%' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-item' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        /*
+         * TAB STILE → Titolo
+         */
+        $this->start_controls_section(
+            'section_style_title',
+            [
+                'label' => 'Titolo prodotto',
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'title_typography',
+                'selector' => '{{WRAPPER}} .edlu-product-title',
+            ]
+        );
+
+        $this->add_control(
+            'title_color',
+            [
+                'label'     => 'Colore titolo',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-title, {{WRAPPER}} .edlu-product-title a' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        /*
+         * TAB STILE → Prezzo
+         */
+        $this->start_controls_section(
+            'section_style_price',
+            [
+                'label' => 'Prezzo',
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'price_typography',
+                'selector' => '{{WRAPPER}} .edlu-product-price',
+            ]
+        );
+
+        $this->add_control(
+            'price_color',
+            [
+                'label'     => 'Colore prezzo',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-price' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        /*
+         * TAB STILE → Pulsante
+         */
+        $this->start_controls_section(
+            'section_style_button',
+            [
+                'label' => 'Pulsante',
+                'tab'   => Controls_Manager::TAB_STYLE,
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Typography::get_type(),
+            [
+                'name'     => 'button_typography',
+                'selector' => '{{WRAPPER}} .edlu-product-add-to-cart .button',
+            ]
+        );
+
+        $this->add_control(
+            'button_text_color',
+            [
+                'label'     => 'Colore testo',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-add-to-cart .button' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'button_bg_color',
+            [
+                'label'     => 'Colore sfondo',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-add-to-cart .button' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_group_control(
+            Group_Control_Border::get_type(),
+            [
+                'name'     => 'button_border',
+                'selector' => '{{WRAPPER}} .edlu-product-add-to-cart .button',
+            ]
+        );
+
+        $this->end_controls_section();
     }
 
     /**
      * Recupera le categorie prodotto WooCommerce per il select.
      */
     private function get_product_categories() {
-        if ( ! function_exists( 'wc_get_product_category_list' ) ) {
+        if ( ! taxonomy_exists( 'product_cat' ) ) {
             return [];
         }
 
@@ -122,6 +329,9 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         return $options;
     }
 
+    /**
+     * Render frontend.
+     */
     protected function render() {
         if ( ! class_exists( 'WooCommerce' ) ) {
             echo '<p>WooCommerce non è attivo.</p>';
@@ -130,9 +340,15 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
 
         $settings = $this->get_settings_for_display();
 
+        $posts_per_page = ! empty( $settings['posts_per_page'] ) ? intval( $settings['posts_per_page'] ) : 24;
+        $columns        = ! empty( $settings['columns'] ) ? max( 1, intval( $settings['columns'] ) ) : 4;
+        $rows           = ! empty( $settings['rows'] ) ? max( 1, intval( $settings['rows'] ) ) : 2;
+        $per_page       = $columns * $rows;
+        $enable_slider  = ( isset( $settings['enable_slider'] ) && 'yes' === $settings['enable_slider'] );
+
         $args = [
             'post_type'      => 'product',
-            'posts_per_page' => ! empty( $settings['posts_per_page'] ) ? intval( $settings['posts_per_page'] ) : 8,
+            'posts_per_page' => $posts_per_page,
             'post_status'    => 'publish',
         ];
 
@@ -146,23 +362,49 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ];
         }
 
-        $query = new WP_Query( $args );
+        $query = new \WP_Query( $args );
 
         if ( ! $query->have_posts() ) {
             echo '<p>Nessun prodotto trovato.</p>';
             return;
         }
 
-        echo '<div class="edlu-product-slider-wrapper">';
-        echo '<div class="edlu-product-grid">';
+        $total_products = $query->found_posts;
+        $total_in_loop  = min( $total_products, $posts_per_page );
+        $total_pages    = ( $per_page > 0 ) ? ceil( $total_in_loop / $per_page ) : 1;
+
+        $wrapper_attrs = [
+            'class'                   => 'edlu-product-slider-wrapper',
+            'data-enable-slider'      => $enable_slider ? 'yes' : 'no',
+            'data-products-per-page'  => $per_page,
+            'data-total-pages'        => $total_pages,
+        ];
+
+        $attr_html = '';
+        foreach ( $wrapper_attrs as $key => $value ) {
+            $attr_html .= sprintf( ' %s="%s"', esc_attr( $key ), esc_attr( $value ) );
+        }
+
+        echo '<div' . $attr_html . '>';
+        echo '<div class="edlu-product-slider-inner">';
+
+        $count      = 0;
+        $page_index = 0;
+
+        echo '<div class="edlu-product-grid edlu-product-page is-active" data-page="0" style="grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr);">';
 
         while ( $query->have_posts() ) {
             $query->the_post();
 
             global $product;
-
             if ( ! $product ) {
                 continue;
+            }
+
+            if ( $count > 0 && 0 === $count % $per_page ) {
+                echo '</div>'; // chiudo pagina precedente
+                $page_index++;
+                echo '<div class="edlu-product-grid edlu-product-page" data-page="' . esc_attr( $page_index ) . '" style="grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr);">';
             }
 
             $product_id    = $product->get_id();
@@ -173,16 +415,18 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
 
             echo '<div class="edlu-product-item">';
 
-            echo '<a href="' . esc_url( $product_link ) . '" class="edlu-product-thumb">';
-            echo $product_thumb;
-            echo '</a>';
+            if ( $product_thumb ) {
+                echo '<a href="' . esc_url( $product_link ) . '" class="edlu-product-thumb">';
+                echo $product_thumb;
+                echo '</a>';
+            }
 
             echo '<h3 class="edlu-product-title">';
             echo '<a href="' . esc_url( $product_link ) . '">' . esc_html( $product_title ) . '</a>';
             echo '</h3>';
 
             if ( 'yes' === $settings['show_price'] && $product_price ) {
-                echo '<div class="edlu-product-price">' . $product_price . '</div>';
+                echo '<div class="edlu-product-price">' . wp_kses_post( $product_price ) . '</div>';
             }
 
             if ( 'yes' === $settings['show_add_to_cart'] ) {
@@ -191,12 +435,23 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
                 echo '</div>';
             }
 
-            echo '</div>';
+            echo '</div>'; // .edlu-product-item
+
+            $count++;
         }
 
         wp_reset_postdata();
 
-        echo '</div>';
-        echo '</div>';
+        echo '</div>'; // ultima pagina
+        echo '</div>'; // .edlu-product-slider-inner
+
+        if ( $enable_slider && $total_pages > 1 ) {
+            echo '<div class="edlu-product-slider-nav">';
+            echo '<button type="button" class="edlu-product-slider-arrow edlu-prev" aria-label="Precedente">&#10094;</button>';
+            echo '<button type="button" class="edlu-product-slider-arrow edlu-next" aria-label="Successivo">&#10095;</button>';
+            echo '</div>';
+        }
+
+        echo '</div>'; // .edlu-product-slider-wrapper
     }
 }
