@@ -76,7 +76,7 @@
     border-radius: 4px;
 }
 
-/* Responsivo: solo il gap si adatta, le colonne vengono gestite inline dal widget */
+/* Responsivo: non tocchiamo le colonne, solo il gap */
 @media (max-width: 1024px) {
     .edlu-product-grid {
         gap: 16px;
