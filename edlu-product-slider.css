@@ -1,17 +1,30 @@
 .edlu-product-slider-wrapper {
     width: 100%;
-    overflow: hidden;
+    position: relative;
 }
 
+.edlu-product-slider-inner {
+    width: 100%;
+}
+
+/* Ogni "pagina" è una griglia */
 .edlu-product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: auto;
     gap: 20px;
 }
 
+/* Slider: nasconde tutte le pagine tranne quella attiva */
+.edlu-product-page {
+    display: none;
+}
+
+.edlu-product-page.is-active {
+    display: grid;
+}
+
+/* Card prodotto */
 .edlu-product-item {
-    padding: 15px;
     border-radius: 8px;
     border: 1px solid #eee;
     box-sizing: border-box;
@@ -47,14 +60,31 @@
     text-align: center;
 }
 
+/* Navigazione slider */
+.edlu-product-slider-nav {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.edlu-product-slider-arrow {
+    border: 1px solid #ddd;
+    background: #fff;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Responsivo: solo il gap si adatta, le colonne vengono gestite inline dal widget */
 @media (max-width: 1024px) {
     .edlu-product-grid {
-        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
     }
 }
 
 @media (max-width: 767px) {
     .edlu-product-grid {
-        grid-template-columns: repeat(1, 1fr);
+        gap: 12px;
     }
 }
