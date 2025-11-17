@@ -55,17 +55,47 @@
     margin-bottom: 10px;
 }
 
-.edlu-product-add-to-cart .button {
-    width: 100%;
-    text-align: center;
+/* Contenitore pulsante: allineamento gestito da Elementor */
+.edlu-product-add-to-cart {
+    text-align: left;
 }
 
-/* Navigazione slider */
+.edlu-product-add-to-cart .button {
+    display: inline-block;
+}
+
+/* Navigazione slider - base */
 .edlu-product-slider-nav {
-    margin-top: 15px;
     display: flex;
-    justify-content: flex-end;
     gap: 10px;
+}
+
+/* In basso centrato (default) */
+.edlu-product-slider-nav.nav-pos-bottom_center {
+    margin-top: 15px;
+    justify-content: center;
+    position: static;
+}
+
+/* In alto centrato (overlay) */
+.edlu-product-slider-nav.nav-pos-top_center {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    justify-content: center;
+    margin-top: 0;
+}
+
+/* Centro ai lati (freccia sx/dx) */
+.edlu-product-slider-nav.nav-pos-center_sides {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    justify-content: space-between;
+    padding: 0 5px;
 }
 
 .edlu-product-slider-arrow {
@@ -76,7 +106,7 @@
     border-radius: 4px;
 }
 
-/* Responsivo: non tocchiamo le colonne, solo il gap */
+/* Responsivo: solo il gap */
 @media (max-width: 1024px) {
     .edlu-product-grid {
         gap: 16px;
