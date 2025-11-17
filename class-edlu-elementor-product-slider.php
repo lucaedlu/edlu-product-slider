@@ -16,8 +16,8 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
     }
 
     public function get_title() {
-        return 'Catalogo Prodotti (EDLU)'
-;    }
+        return 'Catalogo Prodotti (EDLU)';
+    }
 
     public function get_icon() {
         return 'eicon-products';
@@ -36,7 +36,9 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
      */
     protected function register_controls() {
 
-        // TAB CONTENUTO → Query
+        /*
+         * TAB CONTENUTO → Query prodotti
+         */
         $this->start_controls_section(
             'section_query',
             [
@@ -69,7 +71,9 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
 
         $this->end_controls_section();
 
-        // TAB CONTENUTO → Layout & Slider
+        /*
+         * TAB CONTENUTO → Layout & Slider
+         */
         $this->start_controls_section(
             'section_layout',
             [
@@ -112,6 +116,23 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         );
 
         $this->add_control(
+            'nav_position',
+            [
+                'label'     => 'Posizione frecce slider',
+                'type'      => Controls_Manager::SELECT,
+                'default'   => 'bottom_center',
+                'options'   => [
+                    'bottom_center' => 'In basso centrato',
+                    'top_center'    => 'In alto centrato',
+                    'center_sides'  => 'Centro ai lati',
+                ],
+                'condition' => [
+                    'enable_slider' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
             'show_price',
             [
                 'label'        => 'Mostra prezzo',
@@ -138,7 +159,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $this->end_controls_section();
 
         /*
-         * TAB STILE → Card
+         * TAB STILE → Card prodotto
          */
         $this->start_controls_section(
             'section_style_card',
@@ -190,7 +211,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $this->end_controls_section();
 
         /*
-         * TAB STILE → Titolo
+         * TAB STILE → Titolo prodotto
          */
         $this->start_controls_section(
             'section_style_title',
@@ -215,6 +236,51 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .edlu-product-title, {{WRAPPER}} .edlu-product-title a' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'title_align',
+            [
+                'label'     => 'Allineamento titolo',
+                'type'      => Controls_Manager::CHOOSE,
+                'options'   => [
+                    'left'   => [
+                        'title' => 'Sinistra',
+                        'icon'  => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => 'Centro',
+                        'icon'  => 'eicon-text-align-center',
+                    ],
+                    'right'  => [
+                        'title' => 'Destra',
+                        'icon'  => 'eicon-text-align-right',
+                    ],
+                ],
+                'default'   => 'left',
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-title'    => 'text-align: {{VALUE}};',
+                    '{{WRAPPER}} .edlu-product-title a'  => 'text-align: {{VALUE}}; display: inline-block;',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'title_margin_bottom',
+            [
+                'label'      => 'Spazio sotto il titolo',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 60,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-title' => 'margin-bottom: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -247,6 +313,50 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
                 'type'      => Controls_Manager::COLOR,
                 'selectors' => [
                     '{{WRAPPER}} .edlu-product-price' => 'color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'price_align',
+            [
+                'label'     => 'Allineamento prezzo',
+                'type'      => Controls_Manager::CHOOSE,
+                'options'   => [
+                    'left'   => [
+                        'title' => 'Sinistra',
+                        'icon'  => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => 'Centro',
+                        'icon'  => 'eicon-text-align-center',
+                    ],
+                    'right'  => [
+                        'title' => 'Destra',
+                        'icon'  => 'eicon-text-align-right',
+                    ],
+                ],
+                'default'   => 'left',
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-price' => 'text-align: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'price_margin_bottom',
+            [
+                'label'      => 'Spazio sotto il prezzo',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 60,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-price' => 'margin-bottom: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -302,6 +412,50 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
+        $this->add_responsive_control(
+            'button_align',
+            [
+                'label'     => 'Allineamento pulsante',
+                'type'      => Controls_Manager::CHOOSE,
+                'options'   => [
+                    'left'   => [
+                        'title' => 'Sinistra',
+                        'icon'  => 'eicon-text-align-left',
+                    ],
+                    'center' => [
+                        'title' => 'Centro',
+                        'icon'  => 'eicon-text-align-center',
+                    ],
+                    'right'  => [
+                        'title' => 'Destra',
+                        'icon'  => 'eicon-text-align-right',
+                    ],
+                ],
+                'default'   => 'left',
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-add-to-cart' => 'text-align: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'button_margin_top',
+            [
+                'label'      => 'Spazio sopra il pulsante',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 60,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-add-to-cart' => 'margin-top: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
         $this->end_controls_section();
     }
 
@@ -345,6 +499,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $rows           = ! empty( $settings['rows'] ) ? max( 1, intval( $settings['rows'] ) ) : 2;
         $per_page       = $columns * $rows;
         $enable_slider  = ( isset( $settings['enable_slider'] ) && 'yes' === $settings['enable_slider'] );
+        $nav_position   = ! empty( $settings['nav_position'] ) ? $settings['nav_position'] : 'bottom_center';
 
         $args = [
             'post_type'      => 'product',
@@ -446,7 +601,8 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         echo '</div>'; // .edlu-product-slider-inner
 
         if ( $enable_slider && $total_pages > 1 ) {
-            echo '<div class="edlu-product-slider-nav">';
+            $nav_class = 'nav-pos-' . esc_attr( $nav_position );
+            echo '<div class="edlu-product-slider-nav ' . $nav_class . '">';
             echo '<button type="button" class="edlu-product-slider-arrow edlu-prev" aria-label="Precedente">&#10094;</button>';
             echo '<button type="button" class="edlu-product-slider-arrow edlu-next" aria-label="Successivo">&#10095;</button>';
             echo '</div>';
