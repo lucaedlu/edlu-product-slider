@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EDLU - Product Slider Elementor
  * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.2
+ * Version: 0.3
  * Author: EDLU
  */
 
@@ -23,7 +23,7 @@ if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
         'edlu-product-slider'                               // slug del plugin
     );
 
-    $edluUpdateChecker->setBranch('main'); // branch principale del repo
+    $edluUpdateChecker->setBranch( 'main' ); // branch principale del repo
 }
 
 /**
@@ -46,14 +46,22 @@ function edlu_ps_register_widget( $widgets_manager ) {
 add_action( 'elementor/widgets/register', 'edlu_ps_register_widget' );
 
 /**
- * Carica il CSS frontend del widget.
+ * Carica CSS e JS frontend del widget.
  */
-function edlu_ps_enqueue_styles() {
+function edlu_ps_enqueue_assets() {
     wp_enqueue_style(
         'edlu-product-slider-css',
         plugin_dir_url( __FILE__ ) . 'edlu-product-slider.css',
         array(),
-        '0.1'
+        '0.3'
+    );
+
+    wp_enqueue_script(
+        'edlu-product-slider-js',
+        plugin_dir_url( __FILE__ ) . 'edlu-product-slider.js',
+        array( 'jquery' ),
+        '0.3',
+        true
     );
 }
-add_action( 'wp_enqueue_scripts', 'edlu_ps_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', 'edlu_ps_enqueue_assets' );
