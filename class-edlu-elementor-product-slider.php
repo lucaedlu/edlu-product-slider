@@ -109,15 +109,17 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
-        // Righe globali (servono per calcolare prodotti per pagina)
-        $this->add_control(
+        // Righe responsive (desktop / tablet / mobile)
+        $this->add_responsive_control(
             'rows',
             [
-                'label'   => 'Righe per pagina (desktop)',
-                'type'    => Controls_Manager::NUMBER,
-                'default' => 2,
-                'min'     => 1,
-                'max'     => 6,
+                'label'          => 'Righe per pagina',
+                'type'           => Controls_Manager::NUMBER,
+                'default'        => 2,
+                'tablet_default' => 2,
+                'mobile_default' => 1,
+                'min'            => 1,
+                'max'            => 6,
             ]
         );
 
@@ -584,6 +586,32 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
+        // Toggle frecce su tablet
+        $this->add_control(
+            'show_arrows_tablet',
+            [
+                'label'        => 'Mostra frecce su Tablet',
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => 'Sì',
+                'label_off'    => 'No',
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
+        );
+
+        // Toggle frecce su mobile
+        $this->add_control(
+            'show_arrows_mobile',
+            [
+                'label'        => 'Mostra frecce su Mobile',
+                'type'         => Controls_Manager::SWITCHER,
+                'label_on'     => 'Sì',
+                'label_off'    => 'No',
+                'return_value' => 'yes',
+                'default'      => 'yes',
+            ]
+        );
+
         // Regolazione frecce "Centro ai lati"
         $this->add_responsive_control(
             'arrows_vertical_pos',
@@ -693,11 +721,22 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $settings = $this->get_settings_for_display();
 
         $posts_per_page = ! empty( $settings['posts_per_page'] ) ? intval( $settings['posts_per_page'] ) : 24;
-        $columns        = ! empty( $settings['columns'] ) ? max( 1, intval( $settings['columns'] ) ) : 4;
-        $rows           = ! empty( $settings['rows'] ) ? max( 1, intval( $settings['rows'] ) ) : 2;
-        $per_page       = $columns * $rows;
-        $enable_slider  = ( isset( $settings['enable_slider'] ) && 'yes' === $settings['enable_slider'] );
-        $nav_position   = ! empty( $settings['nav_position'] ) ? $settings['nav_position'] : 'bottom_center';
+
+        // Colonne (desktop / tablet / mobile)
+        $columns_desktop = isset( $settings['columns'] ) ? max( 1, intval( $settings['columns'] ) ) : 4;
+        $columns_tablet  = isset( $settings['columns_tablet'] ) ? max( 1, intval( $settings['columns_tablet'] ) ) : $columns_desktop;
+        $columns_mobile  = isset( $settings['columns_mobile'] ) ? max( 1, intval( $settings['columns_mobile'] ) ) : 1;
+
+        // Righe (desktop / tablet / mobile)
+        $rows_desktop = isset( $settings['rows'] ) ? max( 1, intval( $settings['rows'] ) ) : 2;
+        $rows_tablet  = isset( $settings['rows_tablet'] ) ? max( 1, intval( $settings['rows_tablet'] ) ) : $rows_desktop;
+        $rows_mobile  = isset( $settings['rows_mobile'] ) ? max( 1, intval( $settings['rows_mobile'] ) ) : 1;
+
+        $enable_slider = ( isset( $settings['enable_slider'] ) && 'yes' === $settings['enable_slider'] );
+        $nav_position  = ! empty( $settings['nav_position'] ) ? $settings['nav_position'] : 'bottom_center';
+
+        $show_arrows_tablet = isset( $settings['show_arrows_tablet'] ) ? $settings['show_arrows_tablet'] : 'yes';
+        $show_arrows_mobile = isset( $settings['show_arrows_mobile'] ) ? $settings['show_arrows_mobile'] : 'yes';
 
         $args = [
             'post_type'      => 'product',
@@ -725,19 +764,31 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $total_products = $query->found_posts;
         $total_in_loop  = min( $total_products, $posts_per_page );
 
-        // Se slider attivo calcoliamo le pagine, altrimenti no
-        $total_pages = 1;
-        if ( $enable_slider ) {
-            $total_pages = ( $per_page > 0 ) ? ceil( $total_in_loop / $per_page ) : 1;
-        }
+        // Numero di prodotti visibili per "pagina" desktop (per le frecce)
+        $group_desktop = max( 1, $columns_desktop * $rows_desktop );
+        $total_pages   = ( $enable_slider ) ? max( 1, ceil( $total_in_loop / $group_desktop ) ) : 1;
 
         /*
          * WRAPPER ESTERNO
          */
+        $wrapper_classes = [ 'edlu-product-slider-wrapper' ];
+
+        if ( 'yes' !== $show_arrows_tablet ) {
+            $wrapper_classes[] = 'edlu-hide-arrows-tablet';
+        }
+        if ( 'yes' !== $show_arrows_mobile ) {
+            $wrapper_classes[] = 'edlu-hide-arrows-mobile';
+        }
+
         $wrapper_attrs = [
-            'class'              => 'edlu-product-slider-wrapper',
+            'class'              => implode( ' ', $wrapper_classes ),
             'data-enable-slider' => $enable_slider ? 'yes' : 'no',
-            'data-total-pages'   => $total_pages,
+            'data-cols-desktop'  => $columns_desktop,
+            'data-cols-tablet'   => $columns_tablet,
+            'data-cols-mobile'   => $columns_mobile,
+            'data-rows-desktop'  => $rows_desktop,
+            'data-rows-tablet'   => $rows_tablet,
+            'data-rows-mobile'   => $rows_mobile,
         ];
 
         $attr_html = '';
@@ -772,17 +823,12 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         }
 
         /*
-         * CASO 2: SLIDER ATTIVO → markup SWIPER
+         * CASO 2: SLIDER ATTIVO → markup SWIPER (1 slide = 1 prodotto)
+         * Swiper gestisce da solo righe/colonne con "grid" e "breakpoints".
          */
         echo '<div class="edlu-product-slider-inner">';
         echo '<div class="swiper edlu-product-swiper">';
         echo '<div class="swiper-wrapper">';
-
-        $count      = 0;
-        $page_index = 0;
-
-        echo '<div class="swiper-slide" data-page="0">';
-        echo '<div class="edlu-product-grid">';
 
         while ( $query->have_posts() ) {
             $query->the_post();
@@ -792,31 +838,19 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
                 continue;
             }
 
-            if ( $count > 0 && 0 === $count % $per_page ) {
-                // Chiudo la slide precedente e apro la successiva
-                echo '</div>'; // .edlu-product-grid
-                echo '</div>'; // .swiper-slide
-                $page_index++;
-                echo '<div class="swiper-slide" data-page="' . esc_attr( $page_index ) . '">';
-                echo '<div class="edlu-product-grid">';
-            }
-
+            echo '<div class="swiper-slide">';
             $this->render_product_card( $product, $settings );
-
-            $count++;
+            echo '</div>';
         }
 
         wp_reset_postdata();
-
-        echo '</div>'; // .edlu-product-grid dell’ultima slide
-        echo '</div>'; // ultima .swiper-slide
 
         echo '</div>'; // .swiper-wrapper
         echo '</div>'; // .swiper
         echo '</div>'; // .edlu-product-slider-inner
 
         /*
-         * NAVIGAZIONE FRECCE (solo se ci sono più di 1 pagina)
+         * NAVIGAZIONE FRECCE (solo se c'è più di una "pagina" desktop)
          */
         if ( $total_pages > 1 ) {
             $nav_class = 'nav-pos-' . esc_attr( $nav_position );
