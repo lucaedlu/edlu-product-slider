@@ -2,11 +2,9 @@
     'use strict';
 
     function initEdluProductSlider($wrapper) {
-        // Pagine (slide)
-        var $inner = $wrapper.find('.edlu-product-slider-inner');
         var $pages = $wrapper.find('.edlu-product-page');
 
-        if (!$inner.length || !$pages.length || $pages.length <= 1) {
+        if (!$pages.length || $pages.length <= 1) {
             return; // niente slider se c'è solo una pagina
         }
 
@@ -14,16 +12,9 @@
         var current = 0;
         var isAnimating = false;
 
-        // Impostiamo il layout slider (flex con translateX)
-        $inner.addClass('edlu-slider-flex');
-        $pages.addClass('edlu-slider-page');
-
-        function updatePosition() {
-            var offset = -current * 100;
-            $inner.css('transform', 'translateX(' + offset + '%)');
-            $pages.removeClass('is-active');
-            $pages.eq(current).addClass('is-active');
-        }
+        // Mostra solo la pagina attiva (la 0 all'inizio)
+        $pages.removeClass('is-active');
+        $pages.eq(current).addClass('is-active');
 
         function goTo(index) {
             if (index < 0 || index >= totalPages) {
@@ -34,27 +25,30 @@
             }
 
             isAnimating = true;
-            current = index;
-            updatePosition();
 
-            // durata animazione (match con CSS transition)
+            $pages.removeClass('is-active');
+            $pages.eq(index).addClass('is-active');
+
             setTimeout(function () {
                 isAnimating = false;
-            }, 450);
+            }, 400); // match con transition CSS
         }
-
-        // Inizializza posizione
-        updatePosition();
 
         // NAV: frecce
         $wrapper.on('click', '.edlu-prev', function (e) {
             e.preventDefault();
             goTo(current - 1);
+            if (current > 0) {
+                current--;
+            }
         });
 
         $wrapper.on('click', '.edlu-next', function (e) {
             e.preventDefault();
             goTo(current + 1);
+            if (current < totalPages - 1) {
+                current++;
+            }
         });
 
         // DRAG / SWIPE con mouse + touch
@@ -71,7 +65,7 @@
             return event.pageX;
         }
 
-        $inner.on('mousedown.edluSlider touchstart.edluSlider', function (e) {
+        $wrapper.on('mousedown.edluSlider touchstart.edluSlider', function (e) {
             if (isAnimating) {
                 return;
             }
@@ -83,7 +77,7 @@
             if (!dragging) {
                 return;
             }
-            // Evita selezione testo / scroll strani
+            // evita selezione testo
             e.preventDefault();
         });
 
@@ -96,15 +90,17 @@
             var deltaX = endX - startX;
             dragging = false;
 
-            var threshold = 50; // px minimo per considerare uno swipe
+            var threshold = 50; // px minimo per considerare swipe
 
             if (Math.abs(deltaX) > threshold) {
-                if (deltaX < 0) {
-                    // swipe verso sinistra → prossima pagina
+                if (deltaX < 0 && current < totalPages - 1) {
+                    // swipe verso sinistra → pagina successiva
                     goTo(current + 1);
-                } else {
+                    current++;
+                } else if (deltaX > 0 && current > 0) {
                     // swipe verso destra → pagina precedente
                     goTo(current - 1);
+                    current--;
                 }
             }
         });
