@@ -7,22 +7,22 @@
 /* Contenitore slider */
 .edlu-product-slider-inner {
     width: 100%;
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
     user-select: none;
 }
 
-/* Layout slider: flex orizzontale con animazione fluida */
-.edlu-product-slider-inner.edlu-slider-flex {
-    display: flex;
-    transition: transform 0.45s ease;
-    will-change: transform;
+/* Ogni "pagina" (gruppo di prodotti) */
+.edlu-product-page {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
 }
 
-/* Ogni pagina dello slider occupa il 100% */
-.edlu-product-page.edlu-slider-page {
-    flex: 0 0 100%;
-    max-width: 100%;
+/* Solo la pagina attiva è visibile */
+.edlu-product-page.is-active {
+    display: grid;
+    opacity: 1;
 }
 
 /* Griglia prodotti dentro ogni pagina */
