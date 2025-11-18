@@ -12,20 +12,18 @@
     user-select: none;
 }
 
-/* Ogni "pagina" (gruppo di prodotti) */
-.edlu-product-page {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.35s ease;
+/* Swiper container */
+.edlu-product-swiper {
+    width: 100%;
 }
 
-/* Solo la pagina attiva è visibile */
-.edlu-product-page.is-active {
-    display: grid;
-    opacity: 1;
+/* Swiper slide: ogni slide = una "pagina" di prodotti */
+.edlu-product-swiper .swiper-slide {
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Griglia prodotti dentro ogni pagina */
+/* Griglia prodotti dentro ogni slide */
 .edlu-product-grid {
     display: grid;
     grid-auto-rows: auto;
@@ -76,7 +74,7 @@
     display: inline-block;
 }
 
-/* Navigazione slider - base */
+/* NAVIGAZIONE SLIDER */
 .edlu-product-slider-nav {
     display: flex;
     gap: 10px;
@@ -105,10 +103,10 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 50%; /* regolabile da Elementor con arrows_vertical_pos */
+    top: 50%; /* regolabile da Elementor */
     padding: 0 5px;
     display: flex;
-    justify-content: space-between; /* una a sinistra, una a destra */
+    justify-content: space-between;
 }
 
 /* Le frecce in modalità "ai lati" sono centrate verticalmente */
@@ -138,7 +136,7 @@
     display: block;
 }
 
-/* Responsivo: solo il gap */
+/* Responsivo: solo il gap (le colonne le gestisci da Elementor) */
 @media (max-width: 1024px) {
     .edlu-product-grid {
         gap: 16px;
