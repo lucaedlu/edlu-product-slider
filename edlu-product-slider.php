@@ -2,7 +2,7 @@
 /**
  * Plugin Name: EDLU - Product Slider Elementor
  * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.11
+ * Version: 0.11.1
  * Author: EDLU
  * Text Domain: edlu-product-slider
  */
@@ -15,14 +15,16 @@ define( 'EDLU_PS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EDLU_PS_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
 /**
- * Carica la classe del widget.
- */
-require_once EDLU_PS_PLUGIN_PATH . 'class-edlu-elementor-product-slider.php';
-
-/**
  * Registra il widget su Elementor.
+ * IMPORTANTE: qui includiamo la classe SOLO quando Elementor è pronto,
+ * così la classe Elementor\Widget_Base esiste sicuramente.
  */
 add_action( 'elementor/widgets/register', function( $widgets_manager ) {
+
+    // Carichiamo il file della classe del widget
+    require_once EDLU_PS_PLUGIN_PATH . 'class-edlu-elementor-product-slider.php';
+
+    // Registriamo il widget
     $widgets_manager->register( new \EDLU_Elementor_Product_Slider() );
 } );
 
@@ -45,7 +47,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-css',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.css',
         array( 'swiper' ),
-        '0.11'
+        '0.11.1'
     );
 
     // Swiper JS
@@ -62,7 +64,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-js',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.js',
         array( 'swiper', 'jquery' ),
-        '0.11',
+        '0.11.1',
         true
     );
 }
