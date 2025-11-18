@@ -32,6 +32,7 @@
     background: #fff;
 }
 
+/* Immagine prodotto */
 .edlu-product-thumb img {
     width: 100%;
     height: auto;
@@ -40,6 +41,7 @@
     object-fit: cover;
 }
 
+/* Titolo */
 .edlu-product-title {
     font-size: 16px;
     margin: 5px 0 8px;
@@ -50,12 +52,13 @@
     text-decoration: none;
 }
 
+/* Prezzo */
 .edlu-product-price {
     font-weight: 600;
     margin-bottom: 10px;
 }
 
-/* Contenitore pulsante: allineamento gestito da Elementor */
+/* Pulsante */
 .edlu-product-add-to-cart {
     text-align: left;
 }
@@ -68,6 +71,7 @@
 .edlu-product-slider-nav {
     display: flex;
     gap: 10px;
+    z-index: 2;
 }
 
 /* In basso centrato (default) */
@@ -77,7 +81,7 @@
     position: static;
 }
 
-/* In alto centrato (overlay) */
+/* In alto centrato (sovrapposto alla griglia) */
 .edlu-product-slider-nav.nav-pos-top_center {
     position: absolute;
     top: 0;
@@ -90,20 +94,36 @@
 /* Centro ai lati (freccia sx/dx) */
 .edlu-product-slider-nav.nav-pos-center_sides {
     position: absolute;
-    top: 50%;
     left: 0;
     right: 0;
-    transform: translateY(-50%);
-    justify-content: space-between;
+    top: 50%; /* regolabile da Elementor con arrows_vertical_pos */
     padding: 0 5px;
 }
 
+.edlu-product-slider-nav.nav-pos-center_sides .edlu-product-slider-arrow {
+    transform: translateY(-50%); /* base, poi Elementor può sovrascrivere con offset X/Y */
+}
+
+/* Frecce */
 .edlu-product-slider-arrow {
     border: 1px solid #ddd;
     background: #fff;
-    padding: 6px 10px;
     cursor: pointer;
     border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edlu-arrow-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edlu-arrow-icon i,
+.edlu-arrow-icon svg {
+    display: block;
 }
 
 /* Responsivo: solo il gap */
