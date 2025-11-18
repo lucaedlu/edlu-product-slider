@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: EDLU - Product Slider Elementor
- * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.13.0
- * Author: EDLU
+ * Plugin Name: Product Slider
+ * Description: Widget per mostrare prodotti WooCommerce in griglia/slider.
+ * Version: 0.13.1
+ * Author: EDLU Digital Services
  * Text Domain: edlu-product-slider
  */
 
@@ -45,7 +45,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-css',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.css',
         array( 'swiper' ),
-        '0.13.0'
+        '0.13.1'
     );
 
     // Swiper JS
@@ -63,7 +63,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-js',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.js',
         array( 'jquery', 'swiper', 'elementor-frontend' ),
-        '0.13.0',
+        '0.13.1',
         true
     );
 }
