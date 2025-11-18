@@ -1,67 +1,87 @@
 <?php
 /**
- * Plugin Name: Product Slider Elementor
+ * Plugin Name: EDLU - Product Slider Elementor
  * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.10
- * Author: EDLU Digital Services
+ * Version: 0.11
+ * Author: EDLU
+ * Text Domain: edlu-product-slider
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly.
+    exit;
 }
 
-/**
- * AUTO-UPDATE da GitHub con Plugin Update Checker
- */
-require plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php';
-
-// Usa la factory namespaced della v5
-if ( class_exists( '\YahnisElsts\PluginUpdateChecker\v5\PucFactory' ) ) {
-    $edluUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
-        'https://github.com/lucaedlu/edlu-product-slider/', // URL repo GitHub
-        __FILE__,                                           // questo file
-        'edlu-product-slider'                               // slug del plugin
-    );
-
-    $edluUpdateChecker->setBranch( 'main' ); // branch principale del repo
-}
+define( 'EDLU_PS_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'EDLU_PS_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
 /**
- * Registra il widget con Elementor.
- * Qui carichiamo la classe SOLO quando Elementor ha caricato i suoi widget.
+ * Carica la classe del widget.
  */
-function edlu_ps_register_widget( $widgets_manager ) {
+require_once EDLU_PS_PLUGIN_PATH . 'class-edlu-elementor-product-slider.php';
 
-    // Se Elementor non è caricato, non fare nulla
-    if ( ! did_action( 'elementor/loaded' ) ) {
-        return;
-    }
-
-    // Carica la classe del widget (stesso livello del file del plugin)
-    require_once plugin_dir_path( __FILE__ ) . 'class-edlu-elementor-product-slider.php';
-
-    // Registra il widget
+/**
+ * Registra il widget su Elementor.
+ */
+add_action( 'elementor/widgets/register', function( $widgets_manager ) {
     $widgets_manager->register( new \EDLU_Elementor_Product_Slider() );
-}
-add_action( 'elementor/widgets/register', 'edlu_ps_register_widget' );
+} );
 
 /**
- * Carica CSS e JS frontend del widget.
+ * Carica CSS e JS frontend + editor.
+ * Includiamo Swiper.js da CDN e i file del plugin.
  */
 function edlu_ps_enqueue_assets() {
+
+    // Swiper CSS
     wp_enqueue_style(
-        'edlu-product-slider-css',
-        plugin_dir_url( __FILE__ ) . 'edlu-product-slider.css',
+        'swiper',
+        'https://unpkg.com/swiper@9/swiper-bundle.min.css',
         array(),
-        '0.10'
+        '9.4.1'
     );
 
+    // CSS del plugin
+    wp_enqueue_style(
+        'edlu-product-slider-css',
+        EDLU_PS_PLUGIN_URL . 'edlu-product-slider.css',
+        array( 'swiper' ),
+        '0.11'
+    );
+
+    // Swiper JS
+    wp_enqueue_script(
+        'swiper',
+        'https://unpkg.com/swiper@9/swiper-bundle.min.js',
+        array(),
+        '9.4.1',
+        true
+    );
+
+    // JS del plugin
     wp_enqueue_script(
         'edlu-product-slider-js',
-        plugin_dir_url( __FILE__ ) . 'edlu-product-slider.js',
-        array( 'jquery' ),
-        '0.10',
+        EDLU_PS_PLUGIN_URL . 'edlu-product-slider.js',
+        array( 'swiper', 'jquery' ),
+        '0.11',
         true
     );
 }
 add_action( 'wp_enqueue_scripts', 'edlu_ps_enqueue_assets' );
+add_action( 'elementor/editor/after_enqueue_scripts', 'edlu_ps_enqueue_assets' );
+
+/**
+ * Auto-update da GitHub (Plugin Update Checker).
+ * Assicùrati che la cartella "plugin-update-checker" esista dentro il plugin.
+ */
+if ( file_exists( EDLU_PS_PLUGIN_PATH . 'plugin-update-checker/plugin-update-checker.php' ) ) {
+    require EDLU_PS_PLUGIN_PATH . 'plugin-update-checker/plugin-update-checker.php';
+
+    $edlu_ps_update_checker = Puc_v4_Factory::buildUpdateChecker(
+        'https://github.com/lucaedlu/edlu-product-slider',
+        __FILE__,
+        'edlu-product-slider'
+    );
+
+    // Branch principale
+    $edlu_ps_update_checker->setBranch( 'main' );
+}
