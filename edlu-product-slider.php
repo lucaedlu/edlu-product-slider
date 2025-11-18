@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Product Slider
- * Description: Widget per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.13.1
+ * Plugin Name: EDLU - Product Slider Elementor
+ * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
+ * Version: 0.13.2
  * Author: EDLU Digital Services
  * Text Domain: edlu-product-slider
  */
@@ -45,7 +45,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-css',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.css',
         array( 'swiper' ),
-        '0.13.1'
+        '0.13.2'
     );
 
     // Swiper JS
@@ -58,12 +58,12 @@ function edlu_ps_enqueue_assets() {
     );
 
     // JS del plugin
-    // Dipende anche da "elementor-frontend" così abbiamo elementorFrontend in editor
+    // Dipende da "elementor-frontend" così abbiamo elementorFrontend in editor.
     wp_enqueue_script(
         'edlu-product-slider-js',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.js',
         array( 'jquery', 'swiper', 'elementor-frontend' ),
-        '0.13.1',
+        '0.13.2',
         true
     );
 }
@@ -88,17 +88,3 @@ if ( file_exists( EDLU_PS_PLUGIN_PATH . 'plugin-update-checker/plugin-update-che
         $edlu_ps_update_checker->setBranch( 'main' );
     }
 }
-
-/**
- * Aggiunge il link "Controlla aggiornamenti" nella riga del plugin.
- * Cliccandolo porta a Bacheca → Aggiornamenti e forza il check.
- */
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function( $links ) {
-
-    $url   = admin_url( 'update-core.php?force-check=1' );
-    $label = __( 'Controlla aggiornamenti', 'edlu-product-slider' );
-
-    $links[] = '<a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
-
-    return $links;
-} );
