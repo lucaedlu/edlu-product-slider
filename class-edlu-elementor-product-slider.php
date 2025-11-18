@@ -94,21 +94,26 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
-        $this->add_control(
+        // Colonne responsive (desktop / tablet / mobile)
+        $this->add_responsive_control(
             'columns',
             [
-                'label'   => 'Colonne (desktop)',
+                'label'   => 'Colonne',
                 'type'    => Controls_Manager::NUMBER,
                 'default' => 4,
                 'min'     => 1,
                 'max'     => 6,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-grid' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
+                ],
             ]
         );
 
+        // Righe (per pagina) = globale (serve a calcolare quante card per pagina)
         $this->add_control(
             'rows',
             [
-                'label'   => 'Righe per pagina',
+                'label'   => 'Righe per pagina (desktop)',
                 'type'    => Controls_Manager::NUMBER,
                 'default' => 2,
                 'min'     => 1,
@@ -724,7 +729,6 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $wrapper_attrs = [
             'class'                   => 'edlu-product-slider-wrapper',
             'data-enable-slider'      => $enable_slider ? 'yes' : 'no',
-            'data-products-per-page'  => $per_page,
             'data-total-pages'        => $total_pages,
         ];
 
@@ -739,7 +743,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         $count      = 0;
         $page_index = 0;
 
-        echo '<div class="edlu-product-grid edlu-product-page is-active" data-page="0" style="grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr);">';
+        echo '<div class="edlu-product-grid edlu-product-page is-active" data-page="0">';
 
         while ( $query->have_posts() ) {
             $query->the_post();
@@ -752,7 +756,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             if ( $count > 0 && 0 === $count % $per_page ) {
                 echo '</div>'; // chiudo pagina precedente
                 $page_index++;
-                echo '<div class="edlu-product-grid edlu-product-page" data-page="' . esc_attr( $page_index ) . '" style="grid-template-columns: repeat(' . esc_attr( $columns ) . ', 1fr);">';
+                echo '<div class="edlu-product-grid edlu-product-page" data-page="' . esc_attr( $page_index ) . '">';
             }
 
             $product_id    = $product->get_id();
