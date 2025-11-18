@@ -1,26 +1,35 @@
+/* Wrapper generale */
 .edlu-product-slider-wrapper {
     width: 100%;
     position: relative;
 }
 
+/* Contenitore slider */
 .edlu-product-slider-inner {
     width: 100%;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
 }
 
-/* Ogni "pagina" è una griglia */
+/* Layout slider: flex orizzontale con animazione fluida */
+.edlu-product-slider-inner.edlu-slider-flex {
+    display: flex;
+    transition: transform 0.45s ease;
+    will-change: transform;
+}
+
+/* Ogni pagina dello slider occupa il 100% */
+.edlu-product-page.edlu-slider-page {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Griglia prodotti dentro ogni pagina */
 .edlu-product-grid {
     display: grid;
     grid-auto-rows: auto;
     gap: 20px;
-}
-
-/* Slider: nasconde tutte le pagine tranne quella attiva */
-.edlu-product-page {
-    display: none;
-}
-
-.edlu-product-page.is-active {
-    display: grid;
 }
 
 /* Card prodotto */
@@ -102,8 +111,9 @@
     justify-content: space-between; /* una a sinistra, una a destra */
 }
 
+/* Le frecce in modalità "ai lati" sono centrate verticalmente */
 .edlu-product-slider-nav.nav-pos-center_sides .edlu-product-slider-arrow {
-    transform: translateY(-50%); /* base */
+    transform: translateY(-50%);
 }
 
 /* Frecce */
