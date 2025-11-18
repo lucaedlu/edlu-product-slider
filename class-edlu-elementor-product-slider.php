@@ -33,7 +33,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
     }
 
     /**
-     * Controlli Elementor
+     * CONTROLLI ELEMENTOR
      */
     protected function register_controls() {
 
@@ -109,7 +109,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
-        // Righe (per pagina) = globale (serve a calcolare quante card per pagina)
+        // Righe globali (servono per calcolare prodotti per pagina)
         $this->add_control(
             'rows',
             [
@@ -658,7 +658,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
     }
 
     /**
-     * Recupera le categorie prodotto WooCommerce per il select.
+     * Recupera categorie prodotto WooCommerce
      */
     private function get_product_categories() {
         if ( ! taxonomy_exists( 'product_cat' ) ) {
@@ -682,7 +682,7 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
     }
 
     /**
-     * Render frontend.
+     * Render frontend
      */
     protected function render() {
         if ( ! class_exists( 'WooCommerce' ) ) {
@@ -724,12 +724,20 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
 
         $total_products = $query->found_posts;
         $total_in_loop  = min( $total_products, $posts_per_page );
-        $total_pages    = ( $per_page > 0 ) ? ceil( $total_in_loop / $per_page ) : 1;
 
+        // Se slider attivo calcoliamo le pagine, altrimenti no
+        $total_pages = 1;
+        if ( $enable_slider ) {
+            $total_pages = ( $per_page > 0 ) ? ceil( $total_in_loop / $per_page ) : 1;
+        }
+
+        /*
+         * WRAPPER ESTERNO
+         */
         $wrapper_attrs = [
-            'class'                   => 'edlu-product-slider-wrapper',
-            'data-enable-slider'      => $enable_slider ? 'yes' : 'no',
-            'data-total-pages'        => $total_pages,
+            'class'              => 'edlu-product-slider-wrapper',
+            'data-enable-slider' => $enable_slider ? 'yes' : 'no',
+            'data-total-pages'   => $total_pages,
         ];
 
         $attr_html = '';
@@ -738,12 +746,43 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         }
 
         echo '<div' . $attr_html . '>';
+
+        /*
+         * CASO 1: SLIDER DISABILITATO → semplice griglia unica
+         */
+        if ( ! $enable_slider ) {
+            echo '<div class="edlu-product-grid">';
+
+            while ( $query->have_posts() ) {
+                $query->the_post();
+
+                global $product;
+                if ( ! $product ) {
+                    continue;
+                }
+
+                $this->render_product_card( $product, $settings );
+            }
+
+            wp_reset_postdata();
+
+            echo '</div>'; // .edlu-product-grid
+            echo '</div>'; // .wrapper
+            return;
+        }
+
+        /*
+         * CASO 2: SLIDER ATTIVO → markup SWIPER
+         */
         echo '<div class="edlu-product-slider-inner">';
+        echo '<div class="swiper edlu-product-swiper">';
+        echo '<div class="swiper-wrapper">';
 
         $count      = 0;
         $page_index = 0;
 
-        echo '<div class="edlu-product-grid edlu-product-page is-active" data-page="0">';
+        echo '<div class="swiper-slide" data-page="0">';
+        echo '<div class="edlu-product-grid">';
 
         while ( $query->have_posts() ) {
             $query->the_post();
@@ -754,51 +793,32 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             }
 
             if ( $count > 0 && 0 === $count % $per_page ) {
-                echo '</div>'; // chiudo pagina precedente
+                // Chiudo la slide precedente e apro la successiva
+                echo '</div>'; // .edlu-product-grid
+                echo '</div>'; // .swiper-slide
                 $page_index++;
-                echo '<div class="edlu-product-grid edlu-product-page" data-page="' . esc_attr( $page_index ) . '">';
+                echo '<div class="swiper-slide" data-page="' . esc_attr( $page_index ) . '">';
+                echo '<div class="edlu-product-grid">';
             }
 
-            $product_id    = $product->get_id();
-            $product_title = get_the_title();
-            $product_link  = get_permalink();
-            $product_price = $product->get_price_html();
-            $product_thumb = get_the_post_thumbnail( $product_id, 'medium' );
-
-            echo '<div class="edlu-product-item">';
-
-            if ( $product_thumb ) {
-                echo '<a href="' . esc_url( $product_link ) . '" class="edlu-product-thumb">';
-                echo $product_thumb;
-                echo '</a>';
-            }
-
-            echo '<h3 class="edlu-product-title">';
-            echo '<a href="' . esc_url( $product_link ) . '">' . esc_html( $product_title ) . '</a>';
-            echo '</h3>';
-
-            if ( 'yes' === $settings['show_price'] && $product_price ) {
-                echo '<div class="edlu-product-price">' . wp_kses_post( $product_price ) . '</div>';
-            }
-
-            if ( 'yes' === $settings['show_add_to_cart'] ) {
-                echo '<div class="edlu-product-add-to-cart">';
-                woocommerce_template_loop_add_to_cart();
-                echo '</div>';
-            }
-
-            echo '</div>'; // .edlu-product-item
+            $this->render_product_card( $product, $settings );
 
             $count++;
         }
 
         wp_reset_postdata();
 
-        echo '</div>'; // ultima pagina
+        echo '</div>'; // .edlu-product-grid dell’ultima slide
+        echo '</div>'; // ultima .swiper-slide
+
+        echo '</div>'; // .swiper-wrapper
+        echo '</div>'; // .swiper
         echo '</div>'; // .edlu-product-slider-inner
 
-        if ( $enable_slider && $total_pages > 1 ) {
-
+        /*
+         * NAVIGAZIONE FRECCE (solo se ci sono più di 1 pagina)
+         */
+        if ( $total_pages > 1 ) {
             $nav_class = 'nav-pos-' . esc_attr( $nav_position );
 
             $prev_icon = ! empty( $settings['prev_icon'] ) ? $settings['prev_icon'] : null;
@@ -808,29 +828,64 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
 
             // Freccia sinistra
             echo '<button type="button" class="edlu-product-slider-arrow edlu-prev" aria-label="Precedente">';
-                echo '<span class="edlu-arrow-icon">';
-                if ( $prev_icon && ! empty( $prev_icon['value'] ) ) {
-                    Icons_Manager::render_icon( $prev_icon, [ 'aria-hidden' => 'true' ] );
-                } else {
-                    echo '&#10094;'; // fallback
-                }
-                echo '</span>';
+            echo '<span class="edlu-arrow-icon">';
+            if ( $prev_icon && ! empty( $prev_icon['value'] ) ) {
+                Icons_Manager::render_icon( $prev_icon, [ 'aria-hidden' => 'true' ] );
+            } else {
+                echo '&#10094;';
+            }
+            echo '</span>';
             echo '</button>';
 
             // Freccia destra
             echo '<button type="button" class="edlu-product-slider-arrow edlu-next" aria-label="Successivo">';
-                echo '<span class="edlu-arrow-icon">';
-                if ( $next_icon && ! empty( $next_icon['value'] ) ) {
-                    Icons_Manager::render_icon( $next_icon, [ 'aria-hidden' => 'true' ] );
-                } else {
-                    echo '&#10095;'; // fallback
-                }
-                echo '</span>';
+            echo '<span class="edlu-arrow-icon">';
+            if ( $next_icon && ! empty( $next_icon['value'] ) ) {
+                Icons_Manager::render_icon( $next_icon, [ 'aria-hidden' => 'true' ] );
+            } else {
+                echo '&#10095;';
+            }
+            echo '</span>';
             echo '</button>';
 
             echo '</div>';
         }
 
-        echo '</div>'; // .edlu-product-slider-wrapper
+        echo '</div>'; // .wrapper
+    }
+
+    /**
+     * Render di una singola card prodotto
+     */
+    private function render_product_card( $product, $settings ) {
+        $product_id    = $product->get_id();
+        $product_title = get_the_title( $product_id );
+        $product_link  = get_permalink( $product_id );
+        $product_price = $product->get_price_html();
+        $product_thumb = get_the_post_thumbnail( $product_id, 'medium' );
+
+        echo '<div class="edlu-product-item">';
+
+        if ( $product_thumb ) {
+            echo '<a href="' . esc_url( $product_link ) . '" class="edlu-product-thumb">';
+            echo $product_thumb;
+            echo '</a>';
+        }
+
+        echo '<h3 class="edlu-product-title">';
+        echo '<a href="' . esc_url( $product_link ) . '">' . esc_html( $product_title ) . '</a>';
+        echo '</h3>';
+
+        if ( 'yes' === $settings['show_price'] && $product_price ) {
+            echo '<div class="edlu-product-price">' . wp_kses_post( $product_price ) . '</div>';
+        }
+
+        if ( 'yes' === $settings['show_add_to_cart'] ) {
+            echo '<div class="edlu-product-add-to-cart">';
+            woocommerce_template_loop_add_to_cart();
+            echo '</div>';
+        }
+
+        echo '</div>'; // .edlu-product-item
     }
 }
