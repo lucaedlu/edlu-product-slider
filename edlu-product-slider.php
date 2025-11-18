@@ -2,8 +2,8 @@
 /**
  * Plugin Name: EDLU - Product Slider Elementor
  * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.13.2
- * Author: EDLU Digital Services
+ * Version: 0.13.3
+ * Author: EDLU
  * Text Domain: edlu-product-slider
  */
 
@@ -16,8 +16,6 @@ define( 'EDLU_PS_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
 
 /**
  * Registra il widget su Elementor.
- * Includiamo la classe SOLO quando Elementor è pronto,
- * così Elementor\Widget_Base esiste sicuramente.
  */
 add_action( 'elementor/widgets/register', function( $widgets_manager ) {
 
@@ -28,7 +26,6 @@ add_action( 'elementor/widgets/register', function( $widgets_manager ) {
 
 /**
  * Carica CSS e JS frontend + editor.
- * Includiamo Swiper.js da CDN e il JS del plugin.
  */
 function edlu_ps_enqueue_assets() {
 
@@ -45,7 +42,7 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-css',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.css',
         array( 'swiper' ),
-        '0.13.2'
+        '0.13.3'
     );
 
     // Swiper JS
@@ -57,13 +54,12 @@ function edlu_ps_enqueue_assets() {
         true
     );
 
-    // JS del plugin
-    // Dipende da "elementor-frontend" così abbiamo elementorFrontend in editor.
+    // JS del plugin (dipende anche da elementor-frontend per l’editor)
     wp_enqueue_script(
         'edlu-product-slider-js',
         EDLU_PS_PLUGIN_URL . 'edlu-product-slider.js',
         array( 'jquery', 'swiper', 'elementor-frontend' ),
-        '0.13.2',
+        '0.13.3',
         true
     );
 }
@@ -71,20 +67,48 @@ add_action( 'wp_enqueue_scripts', 'edlu_ps_enqueue_assets' );
 add_action( 'elementor/editor/after_enqueue_scripts', 'edlu_ps_enqueue_assets' );
 
 /**
- * Auto-update da GitHub (Plugin Update Checker) – in modalità "safe".
- * Se la classe non esiste, non facciamo nulla (nessun errore critico).
+ * Auto-update da GitHub (Plugin Update Checker).
+ *
+ * Qui facciamo una cosa furba:
+ * 1. includiamo la libreria;
+ * 2. cerchiamo una QUALSIASI classe "Factory" della libreria
+ *    (Puc_v4_Factory oppure quella namespaced tipo
+ *    YahnisElsts\PluginUpdateChecker\v5p6\PucFactory);
+ * 3. la usiamo per buildare l'update checker.
  */
 if ( file_exists( EDLU_PS_PLUGIN_PATH . 'plugin-update-checker/plugin-update-checker.php' ) ) {
 
     require_once EDLU_PS_PLUGIN_PATH . 'plugin-update-checker/plugin-update-checker.php';
 
+    $factoryClass = null;
+
+    // Caso classico: versione v4 con classe globale.
     if ( class_exists( 'Puc_v4_Factory' ) ) {
-        $edlu_ps_update_checker = Puc_v4_Factory::buildUpdateChecker(
+        $factoryClass = 'Puc_v4_Factory';
+    } else {
+        // Altre versioni: cerchiamo una classe che contenga
+        // "PluginUpdateChecker" e "PucFactory" nel nome.
+        foreach ( get_declared_classes() as $class ) {
+            if ( false !== strpos( $class, 'PluginUpdateChecker' ) &&
+                 false !== strpos( $class, 'PucFactory' ) ) {
+
+                $factoryClass = $class;
+                break;
+            }
+        }
+    }
+
+    if ( $factoryClass && class_exists( $factoryClass ) && method_exists( $factoryClass, 'buildUpdateChecker' ) ) {
+        // Costruiamo l'update checker usando la factory trovata.
+        $edlu_ps_update_checker = $factoryClass::buildUpdateChecker(
             'https://github.com/lucaedlu/edlu-product-slider',
             __FILE__,
             'edlu-product-slider'
         );
 
-        $edlu_ps_update_checker->setBranch( 'main' );
+        // Se l’oggetto supporta setBranch, usiamo "main".
+        if ( is_object( $edlu_ps_update_checker ) && method_exists( $edlu_ps_update_checker, 'setBranch' ) ) {
+            $edlu_ps_update_checker->setBranch( 'main' );
+        }
     }
 }
