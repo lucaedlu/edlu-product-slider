@@ -8,6 +8,7 @@ use Elementor\Controls_Manager;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Border;
 use Elementor\Group_Control_Box_Shadow;
+use Elementor\Icons_Manager;
 
 class EDLU_Elementor_Product_Slider extends Widget_Base {
 
@@ -261,8 +262,8 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
                 ],
                 'default'   => 'left',
                 'selectors' => [
-                    '{{WRAPPER}} .edlu-product-title'    => 'text-align: {{VALUE}};',
-                    '{{WRAPPER}} .edlu-product-title a'  => 'text-align: {{VALUE}}; display: inline-block;',
+                    '{{WRAPPER}} .edlu-product-title'   => 'text-align: {{VALUE}};',
+                    '{{WRAPPER}} .edlu-product-title a' => 'text-align: {{VALUE}}; display: inline-block;',
                 ],
             ]
         );
@@ -457,6 +458,175 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         );
 
         $this->end_controls_section();
+
+        /*
+         * TAB STILE → Frecce slider
+         */
+        $this->start_controls_section(
+            'section_style_arrows',
+            [
+                'label'     => 'Frecce slider',
+                'tab'       => Controls_Manager::TAB_STYLE,
+                'condition' => [
+                    'enable_slider' => 'yes',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'prev_icon',
+            [
+                'label'   => 'Icona freccia sinistra',
+                'type'    => Controls_Manager::ICONS,
+                'default' => [
+                    'value'   => 'eicon-chevron-left',
+                    'library' => 'elementor',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'next_icon',
+            [
+                'label'   => 'Icona freccia destra',
+                'type'    => Controls_Manager::ICONS,
+                'default' => [
+                    'value'   => 'eicon-chevron-right',
+                    'library' => 'elementor',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'arrow_color',
+            [
+                'label'     => 'Colore icona',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-slider-arrow'     => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .edlu-product-slider-arrow i'   => 'color: {{VALUE}};',
+                    '{{WRAPPER}} .edlu-product-slider-arrow svg' => 'fill: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'arrow_bg_color',
+            [
+                'label'     => 'Sfondo frecce',
+                'type'      => Controls_Manager::COLOR,
+                'selectors' => [
+                    '{{WRAPPER}} .edlu-product-slider-arrow' => 'background-color: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'arrow_border_radius',
+            [
+                'label'      => 'Raggio bordo (tondo)',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px', '%' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 50,
+                    ],
+                    '%'  => [
+                        'min' => 0,
+                        'max' => 50,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-slider-arrow' => 'border-radius: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'arrow_padding',
+            [
+                'label'      => 'Padding interno freccia',
+                'type'       => Controls_Manager::DIMENSIONS,
+                'size_units' => [ 'px', 'em' ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-slider-arrow' =>
+                        'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        // Regolazione frecce "Centro ai lati"
+        $this->add_responsive_control(
+            'arrows_vertical_pos',
+            [
+                'label'      => 'Altezza frecce (solo “Centro ai lati”)',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ '%' ],
+                'range'      => [
+                    '%' => [
+                        'min' => 0,
+                        'max' => 100,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 50,
+                    'unit' => '%',
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-slider-nav.nav-pos-center_sides' => 'top: {{SIZE}}{{UNIT}};',
+                ],
+                'condition'  => [
+                    'nav_position' => 'center_sides',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'prev_offset_x',
+            [
+                'label'      => 'Distanza freccia sinistra verso l’esterno',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 200,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-slider-nav.nav-pos-center_sides .edlu-prev' =>
+                        'transform: translateX(-{{SIZE}}{{UNIT}}) translateY(-50%);',
+                ],
+                'condition'  => [
+                    'nav_position' => 'center_sides',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'next_offset_x',
+            [
+                'label'      => 'Distanza freccia destra verso l’esterno',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 200,
+                    ],
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-product-slider-nav.nav-pos-center_sides .edlu-next' =>
+                        'transform: translateX({{SIZE}}{{UNIT}}) translateY(-50%);',
+                ],
+                'condition'  => [
+                    'nav_position' => 'center_sides',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
     }
 
     /**
@@ -601,10 +771,36 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
         echo '</div>'; // .edlu-product-slider-inner
 
         if ( $enable_slider && $total_pages > 1 ) {
+
             $nav_class = 'nav-pos-' . esc_attr( $nav_position );
+
+            $prev_icon = ! empty( $settings['prev_icon'] ) ? $settings['prev_icon'] : null;
+            $next_icon = ! empty( $settings['next_icon'] ) ? $settings['next_icon'] : null;
+
             echo '<div class="edlu-product-slider-nav ' . $nav_class . '">';
-            echo '<button type="button" class="edlu-product-slider-arrow edlu-prev" aria-label="Precedente">&#10094;</button>';
-            echo '<button type="button" class="edlu-product-slider-arrow edlu-next" aria-label="Successivo">&#10095;</button>';
+
+            // Freccia sinistra
+            echo '<button type="button" class="edlu-product-slider-arrow edlu-prev" aria-label="Precedente">';
+                echo '<span class="edlu-arrow-icon">';
+                if ( $prev_icon && ! empty( $prev_icon['value'] ) ) {
+                    Icons_Manager::render_icon( $prev_icon, [ 'aria-hidden' => 'true' ] );
+                } else {
+                    echo '&#10094;'; // fallback
+                }
+                echo '</span>';
+            echo '</button>';
+
+            // Freccia destra
+            echo '<button type="button" class="edlu-product-slider-arrow edlu-next" aria-label="Successivo">';
+                echo '<span class="edlu-arrow-icon">';
+                if ( $next_icon && ! empty( $next_icon['value'] ) ) {
+                    Icons_Manager::render_icon( $next_icon, [ 'aria-hidden' => 'true' ] );
+                } else {
+                    echo '&#10095;'; // fallback
+                }
+                echo '</span>';
+            echo '</button>';
+
             echo '</div>';
         }
 
