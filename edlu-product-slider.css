@@ -98,10 +98,12 @@
     right: 0;
     top: 50%; /* regolabile da Elementor con arrows_vertical_pos */
     padding: 0 5px;
+    display: flex;
+    justify-content: space-between; /* una a sinistra, una a destra */
 }
 
 .edlu-product-slider-nav.nav-pos-center_sides .edlu-product-slider-arrow {
-    transform: translateY(-50%); /* base, poi Elementor può sovrascrivere con offset X/Y */
+    transform: translateY(-50%); /* base */
 }
 
 /* Frecce */
