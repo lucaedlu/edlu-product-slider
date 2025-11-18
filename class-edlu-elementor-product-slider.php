@@ -510,6 +510,29 @@ class EDLU_Elementor_Product_Slider extends Widget_Base {
             ]
         );
 
+        $this->add_responsive_control(
+            'arrow_icon_size',
+            [
+                'label'      => 'Dimensione icona',
+                'type'       => Controls_Manager::SLIDER,
+                'size_units' => [ 'px' ],
+                'range'      => [
+                    'px' => [
+                        'min' => 8,
+                        'max' => 80,
+                    ],
+                ],
+                'default'    => [
+                    'size' => 16,
+                    'unit' => 'px',
+                ],
+                'selectors'  => [
+                    '{{WRAPPER}} .edlu-arrow-icon i'   => 'font-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .edlu-arrow-icon svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
         $this->add_control(
             'arrow_bg_color',
             [
