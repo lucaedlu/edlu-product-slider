@@ -17,13 +17,12 @@
     width: 100%;
 }
 
-/* Swiper slide: ogni slide = una "pagina" di prodotti */
+/* Ogni slide contiene una card prodotto (in modalità slider) */
 .edlu-product-swiper .swiper-slide {
-    width: 100%;
     box-sizing: border-box;
 }
 
-/* Griglia prodotti dentro ogni slide */
+/* Griglia prodotti per modalità NON slider */
 .edlu-product-grid {
     display: grid;
     grid-auto-rows: auto;
@@ -136,7 +135,21 @@
     display: block;
 }
 
-/* Responsivo: solo il gap (le colonne le gestisci da Elementor) */
+/* Nascondi frecce su TABLET se disattivate */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .edlu-product-slider-wrapper.edlu-hide-arrows-tablet .edlu-product-slider-nav {
+        display: none;
+    }
+}
+
+/* Nascondi frecce su MOBILE se disattivate */
+@media (max-width: 767px) {
+    .edlu-product-slider-wrapper.edlu-hide-arrows-mobile .edlu-product-slider-nav {
+        display: none;
+    }
+}
+
+/* Responsivo: solo il gap */
 @media (max-width: 1024px) {
     .edlu-product-grid {
         gap: 16px;
