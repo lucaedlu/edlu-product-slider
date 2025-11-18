@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Product Slider Elementor
  * Description: Widget Elementor per mostrare prodotti WooCommerce in griglia/slider.
- * Version: 0.9
+ * Version: 0.10
  * Author: EDLU Digital Services
  */
 
@@ -53,14 +53,14 @@ function edlu_ps_enqueue_assets() {
         'edlu-product-slider-css',
         plugin_dir_url( __FILE__ ) . 'edlu-product-slider.css',
         array(),
-        '0.9'
+        '0.10'
     );
 
     wp_enqueue_script(
         'edlu-product-slider-js',
         plugin_dir_url( __FILE__ ) . 'edlu-product-slider.js',
         array( 'jquery' ),
-        '0.9',
+        '0.10',
         true
     );
 }
